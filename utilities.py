@@ -25,15 +25,15 @@ def read_xdf(filename, show_plot=True, show_psd=True, verbose=False) -> mne.io.a
     # print(raw.info['bads'])
 
     # Set channel types
-    # set_channel_types({CHANNEL_NAME: CHANNEL_TYPE}) 
-    raw.set_channel_types({'obci_eeg1_0': 'eeg'})  
-    raw.set_channel_types({'obci_eeg1_1': 'eeg'})  
-    raw.set_channel_types({'obci_eeg1_2': 'eeg'})  
-    raw.set_channel_types({'obci_eeg1_3': 'eeg'})  
-    raw.set_channel_types({'obci_eeg1_4': 'eeg'})  
-    raw.set_channel_types({'obci_eeg1_5': 'eeg'})  
-    raw.set_channel_types({'obci_eeg1_6': 'eeg'})  
-    raw.set_channel_types({'obci_eeg1_7': 'eeg'})  
+    #   set_channel_types({CHANNEL_NAME : CHANNEL_TYPE}) 
+    raw.set_channel_types({'obci_eeg1_0': 'eeg'})   # FP1
+    raw.set_channel_types({'obci_eeg1_1': 'eeg'})   # O1
+    raw.set_channel_types({'obci_eeg1_2': 'eeg'})   # Oz
+    raw.set_channel_types({'obci_eeg1_3': 'eeg'})   # O2
+    raw.set_channel_types({'obci_eeg1_4': 'eeg'})   # POz
+    raw.set_channel_types({'obci_eeg1_5': 'eeg'})   # Pz
+    raw.set_channel_types({'obci_eeg1_6': 'eeg'})   # none
+    raw.set_channel_types({'obci_eeg1_7': 'eeg'})   # none
 
     show = False
     # Plot EEG graph
