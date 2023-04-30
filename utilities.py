@@ -41,8 +41,8 @@ def read_xdf(filename, show_plot=True, show_psd=True, verbose=False) -> mne.io.a
     if show_plot:
 
         raw.plot(
-            duration=5, 
-            start=4.5, 
+            duration=15, 
+            start=0, 
             scalings=169, # You may edit scalings value later
         ) #, n_channels=8, bad_color='red'
         show = True
@@ -50,7 +50,14 @@ def read_xdf(filename, show_plot=True, show_psd=True, verbose=False) -> mne.io.a
     # https://mne.tools/stable/generated/mne.io.RawArray.html#mne.io.RawArray.compute_psd
     if show_psd:
         raw.compute_psd(
-            picks='obci_eeg1_7',    # pick by channel name
+            fmax=60,
+            picks=[
+                'obci_eeg1_1',
+                'obci_eeg1_2',
+                'obci_eeg1_3',
+                'obci_eeg1_4',
+                'obci_eeg1_5',
+            ],                      # pick by channel name
             # picks='eeg',          # pick by channel type
             ).plot()
         show = True
@@ -63,4 +70,6 @@ def read_xdf(filename, show_plot=True, show_psd=True, verbose=False) -> mne.io.a
 if __name__=='__main__':
 
     # raw = read_xdf("example.xdf")
-    raw = read_xdf("test01_OpenBCI.xdf", show_plot=True, show_psd=True)
+    # raw = read_xdf("test01_OpenBCI.xdf", show_plot=True, show_psd=True)
+
+    raw = read_xdf("omz1.xdf", show_plot=True, show_psd=False)
