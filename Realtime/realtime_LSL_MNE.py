@@ -14,7 +14,7 @@ print(__doc__)
 host = 'openbcigui'
 # this is the max wait time in seconds until client connection
 wait_max = 5
-
+n_epochs = 5
 
 # Load a file to stream raw data
 # data_path = sample.data_path()
@@ -23,7 +23,7 @@ wait_max = 5
 
 # # For this example, let's use the mock LSL stream.
 _, ax = plt.subplots(1)
-n_epochs = 5
+
 
 # main function is necessary here to enable script as own program
 # in such way a child process can be started (primarily for Windows)
