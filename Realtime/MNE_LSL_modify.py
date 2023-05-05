@@ -40,12 +40,14 @@ def main():
             sfreq = int(client_info['sfreq']) 
             
             # let's observe ten seconds of data
-            for ii in range(n_epochs):
-                print('Got epoch %d/%d' % (ii + 1, n_epochs))
-                plt.cla()
-                epoch = client.get_data_as_epoch(n_samples=sfreq)
-                epoch.average().plot(axes=ax)
-                plt.pause(1.)
+            # for ii in range(n_epochs):
+            #     print('Got epoch %d/%d' % (ii + 1, n_epochs))
+            #     plt.cla()
+            #     epoch = client.get_data_as_epoch(n_samples=sfreq)
+            #     epoch.average().plot(axes=ax)
+            #     plt.pause(1.)
+            epoch = client.get_data_as_epoch(n_samples=sfreq)
+            epoch.average().plot(axes=ax)
             plt.draw()
     
     _, ax = plt.subplots(1)
@@ -80,7 +82,7 @@ def main():
         # the different inlet classes.
         # for inlet in inlets:
         #     inlet.pull_and_plot(mintime, plt)
-        epoch_plot(lsl_client)
+        epoch_plot()
         
     # create a timer that will move the view every update_interval ms
     update_timer = QtCore.QTimer()
