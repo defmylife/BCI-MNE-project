@@ -68,7 +68,7 @@ def read_xdf(filename, show_plot=True, show_psd=True, verbose=False, plot_scale=
     return raw
 
 
-def show_epoch(raw, plot_scale=169):
+def show_epoch(raw, show_eeg=False, plot_scale=169):
     raw_eeg = raw.pick_channels([
                     'obci_eeg1_1',
                     'obci_eeg1_2',
@@ -87,22 +87,42 @@ def show_epoch(raw, plot_scale=169):
     )
 
     # Visualization
-    raw_eeg.plot(
-            duration=10, 
-            start=0, 
+    if show_eeg:
+        raw_eeg.plot(
+                duration=10, 
+                start=0, 
+                scalings=plot_scale, # You may edit scalings value later
+            ) #, n_channels=8, bad_color='red'
+            # show = True
+
+        epochs['2'].plot(
             scalings=plot_scale, # You may edit scalings value later
-        ) #, n_channels=8, bad_color='red'
-        # show = True
+            title='Left stimuli start',
+        )
+        epochs['5'].plot(
+            scalings=plot_scale, # You may edit scalings value later
+            title='Right stimuli start',
+        )
 
-    epochs['2'].plot(
-        scalings=plot_scale, # You may edit scalings value later
-        title='Left stimuli start',
-    )
-    epochs['5'].plot(
-        scalings=plot_scale, # You may edit scalings value later
-        title='Right stimuli start',
-    )
+    fig, ax = plt.subplots(2, figsize=(9,9))
 
+    epochs['2'].compute_psd(
+        fmax=30,                    
+        ).plot(
+            axes=ax[0],
+            average=True,
+            )
+    ax[0].set_title('Left stimuli')
+
+    epochs['5'].compute_psd(
+        fmax=30,                    
+        ).plot(
+            axes=ax[1],
+            average=True,
+            )
+    ax[1].set_title('Right stimuli')
+
+    plt.tight_layout()
     plt.show()
 
 
