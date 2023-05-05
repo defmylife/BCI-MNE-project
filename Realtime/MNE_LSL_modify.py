@@ -31,16 +31,23 @@ def main():
     plt = pw.getPlotItem()
     plt.enableAutoRange(x=False, y=True)
     
+    
+        _, ax = plt.subplots(1)
+        
     # MNE-LSL Client
     with LSLClient(info=None, host=host, wait_max=wait_max) as client:
         client_info = client.get_measurement_info()
         sfreq = int(client_info['sfreq']) 
-    
-    def epoch_plot(client):
-        epoch = client.get_data_as_epoch(n_samples=sfreq)
-        epoch.average().plot(axes=plt)
+        
+        # let's observe ten seconds of data
+        for ii in range(n_epochs):
+            print('Got epoch %d/%d' % (ii + 1, n_epochs))
+            plt.cla()
+            epoch = client.get_data_as_epoch(n_samples=sfreq)
+            epoch.average().plot(axes=ax)
+            plt.pause(1.)
+        plt.draw()
 
-    
     def scroll():
         """Move the view so the data appears to scroll"""
         # We show data only up to a timepoint shortly before the current time
