@@ -28,8 +28,8 @@ n_epochs = 5
 def main():
     # Create the pyqtgraph window
     pw = pg.plot(title='LSL Plot')
-    plt = pw.getPlotItem()
-    plt.enableAutoRange(x=False, y=True)
+    pltpy = pw.getPlotItem()
+    pltpy.enableAutoRange(x=False, y=True)
     
     # MNE-LSL Client
     lsl_client = LSLClient(info=None, host=host, wait_max=wait_max)
