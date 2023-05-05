@@ -32,7 +32,7 @@ def main():
     plt.enableAutoRange(x=False, y=True)
     
     
-        _, ax = plt.subplots(1)
+    _, ax = plt.subplots(1)
         
     # MNE-LSL Client
     with LSLClient(info=None, host=host, wait_max=wait_max) as client:
