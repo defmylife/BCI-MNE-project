@@ -68,7 +68,7 @@ def read_xdf(filename, show_plot=True, show_psd=True, verbose=False, plot_scale=
     return raw
 
 
-def show_epoch(raw, show_eeg=False, plot_scale=169):
+def show_epoch(raw, filename=None, show_eeg=False, plot_scale=169):
     raw_eeg = raw.pick_channels([
                     'obci_eeg1_1',
                     'obci_eeg1_2',
@@ -112,7 +112,7 @@ def show_epoch(raw, show_eeg=False, plot_scale=169):
             axes=ax[0],
             average=True,
             )
-    ax[0].set_title('Left stimuli')
+    ax[0].set_title('Left stimuli' if not filename else 'Left stimuli - '+filename)
 
     epochs['5'].compute_psd(
         fmax=30,                    
@@ -120,7 +120,7 @@ def show_epoch(raw, show_eeg=False, plot_scale=169):
             axes=ax[1],
             average=True,
             )
-    ax[1].set_title('Right stimuli')
+    ax[1].set_title('Right stimuli' if not filename else 'Right stimuli - '+filename)
 
     plt.tight_layout()
     plt.show()
@@ -131,9 +131,13 @@ if __name__=='__main__':
     # raw = read_xdf("example.xdf")
     # raw = read_xdf("test01_OpenBCI.xdf", show_plot=True, show_psd=True)
 
-    raw = read_xdf("omz1.xdf", 
+    filename = 'Pipo_1_5_test1.xdf'
+    # filename = 'Pipo_1_5_test2.xdf'
+    # filename = 'Pipo_1_5_test3.xdf'
+
+    raw = read_xdf(filename, 
             show_plot=False, 
         show_psd=False,
     )
 
-    show_epoch(raw)
+    show_epoch(raw, filename)
