@@ -34,13 +34,19 @@ def main():
     # MNE-LSL Client
     lsl_client = LSLClient(info=None, host=host, wait_max=wait_max)
     
-    def epoch_plot(client):
-        client_info = client.get_measurement_info()
-        sfreq = int(client_info['sfreq'])
-        epoch = client.get_data_as_epoch(n_samples=sfreq)
-        epoch.average().plot(axes=ax)
-        plt.pause(1.)
-        plt.draw()
+    def epoch_plot():
+        with LSLClient(info=None, host=host, wait_max=wait_max) as client:
+            client_info = client.get_measurement_info()
+            sfreq = int(client_info['sfreq']) 
+            
+            # let's observe ten seconds of data
+            for ii in range(n_epochs):
+                print('Got epoch %d/%d' % (ii + 1, n_epochs))
+                plt.cla()
+                epoch = client.get_data_as_epoch(n_samples=sfreq)
+                epoch.average().plot(axes=ax)
+                plt.pause(1.)
+            plt.draw()
     
     _, ax = plt.subplots(1)
         
