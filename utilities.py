@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 from pprint import pprint
 
 
-def read_xdf(filename, show_plot=True, show_psd=True, verbose=False, plot_scale=169) -> mne.io.array.array.RawArray:
+def read_xdf(filename: str, show_plot=True, show_psd=True, verbose=False, plot_scale=169) -> mne.io.array.array.RawArray:
     """
     Loading XDF file into MNE-RawArray. MNE-Python does not support this file format out of the box, 
     but we can use the pyxdf package and MNELAB to import the data. 
@@ -68,7 +68,7 @@ def read_xdf(filename, show_plot=True, show_psd=True, verbose=False, plot_scale=
     return raw
 
 
-def show_epoch(raw, filename=None, show_eeg=False, plot_scale=169):
+def show_epoch(raw: mne.io.array.array.RawArray, filename=None, show_eeg=False, show_time_freq=False, plot_scale=169):
     raw_eeg = raw.pick_channels([
                     'obci_eeg1_1',
                     'obci_eeg1_2',
@@ -108,21 +108,70 @@ def show_epoch(raw, filename=None, show_eeg=False, plot_scale=169):
 
     epochs['2'].compute_psd(
         fmax=30,                    
+        # method='welch',
         ).plot(
             axes=ax[0],
-            average=True,
+            average=True, 
             )
     ax[0].set_title('Left stimuli' if not filename else 'Left stimuli - '+filename)
 
     epochs['5'].compute_psd(
         fmax=30,                    
+        # method='welch',
         ).plot(
             axes=ax[1],
-            average=True,
+            average=True, 
             )
     ax[1].set_title('Right stimuli' if not filename else 'Right stimuli - '+filename)
-
     plt.tight_layout()
+
+    # Plot Time-frequency
+    if show_time_freq:
+        # Split Epochs (Trials) including Cue
+        epochs_from_cue = mne.Epochs(raw_eeg, events, 
+                tmin=-1.0,      # init timestamp of epoch (-1.0 means trigger before event start 1.0 second)
+                tmax=10.0,      # final timestamp (10 means set epoch duration 10 second)
+                # baseline=(0, 0),
+                preload=True,
+            )
+        channel_name = (    
+            '(O1) obci_eeg1_1',
+            '(Oz) obci_eeg1_2',
+            '(O2) obci_eeg1_3',
+            '(POz) obci_eeg1_4',
+            '(Pz) obci_eeg1_5',)
+
+        fig, ax = plt.subplots(2, 5, figsize=(17, 7))
+        plt.title('Time-frequency')
+
+        # Select range of frequency you wanna plot
+        show_freqs = list(range(1,25))
+        # show_freqs = [6.0, 12.0, 18.0, 24.0, 10.0, 20.0, 30.0]
+
+        for i in range(5):
+            power_L = mne.time_frequency.tfr_multitaper(
+                epochs_from_cue['2'], 
+                freqs=show_freqs, 
+                n_cycles=10, 
+                use_fft=True, 
+                decim=3,
+                return_itc=False,
+            )
+            power_L.plot([i], mode='logratio', axes=ax[0,i], show=False, colorbar=False)
+            ax[0,i].set_title('Left stimuli - '+channel_name[i]); ax[0,i].set_xlabel('')
+
+            power_R = mne.time_frequency.tfr_multitaper(
+                epochs_from_cue['5'], 
+                freqs=show_freqs, 
+                n_cycles=10, 
+                use_fft=True, 
+                decim=3,
+                return_itc=False,
+            )
+            power_R.plot([i], mode='logratio', axes=ax[1,i], show=False, colorbar=False)
+            ax[1,i].set_title('Right stimuli - '+channel_name[i])
+        plt.tight_layout()
+
     plt.show()
 
 
@@ -136,8 +185,11 @@ if __name__=='__main__':
     # filename = 'Pipo_1_5_test3.xdf'
 
     raw = read_xdf(filename, 
-            show_plot=False, 
+        show_plot=False, 
         show_psd=False,
     )
 
-    show_epoch(raw, filename)
+    show_epoch(raw, filename,
+        show_eeg=False,
+        show_time_freq=True
+    )
