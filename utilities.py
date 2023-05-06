@@ -13,6 +13,10 @@ def read_xdf(filename: str, show_plot=True, show_psd=True, verbose=False, plot_s
     Loading XDF file into MNE-RawArray. MNE-Python does not support this file format out of the box, 
     but we can use the pyxdf package and MNELAB to import the data. 
 
+    attribute:
+        show_plot : If True, show all EEG channels and able to zoom in-out, scaling
+        show_psd  : If True, show overall average power spectral density
+
     return: MNE RawArray
     """
     # Read xdf
@@ -69,6 +73,15 @@ def read_xdf(filename: str, show_plot=True, show_psd=True, verbose=False, plot_s
 
 
 def show_epoch(raw: mne.io.array.array.RawArray, filename=None, show_eeg=False, show_time_freq=False, plot_scale=169):
+    """
+    Showing Power spectral density (PSD) plot, split by Left-Right stimuli event, average by epoch 
+
+    attribute:
+        show_eeg        : If True, (same as show_plot) show all EEG channels and able to zoom in-out, scaling
+        show_time_freq  : If True, show Time-Frequency plot split by Left-Right stimuli and each O1, Oz, O2, POz, Pz
+
+    return: None
+    """
     raw_eeg = raw.pick_channels([
                     'obci_eeg1_1',
                     'obci_eeg1_2',
@@ -177,19 +190,26 @@ def show_epoch(raw: mne.io.array.array.RawArray, filename=None, show_eeg=False, 
 
 if __name__=='__main__':
 
-    # raw = read_xdf("example.xdf")
-    # raw = read_xdf("test01_OpenBCI.xdf", show_plot=True, show_psd=True)
-
     filename = 'Pipo_1_5_test1.xdf'
     # filename = 'Pipo_1_5_test2.xdf'
     # filename = 'Pipo_1_5_test3.xdf'
 
+    # Loading XDF file into MNE-RawArray
     raw = read_xdf(filename, 
+
         show_plot=False, 
+        # show_plot : If True, show all EEG channels and able to zoom in-out, scaling
+
         show_psd=False,
+        # show_psd : If True, show overall average power spectral density
     )
 
+    # Showing Power spectral density (PSD) split by Left-Right stimuli event
     show_epoch(raw, filename,
+
         show_eeg=False,
+        # show_eeg : If True, (same as show_plot) show all EEG channels and able to zoom in-out, scaling
+
         show_time_freq=True
+        # show_time_freq : If True, show Time-Frequency plot split by Left-Right stimuli and each O1, Oz, O2, POz, Pz
     )
