@@ -8,12 +8,13 @@ import matplotlib.pyplot as plt
 from pprint import pprint
 
 
-def read_xdf(filename: str, show_plot=True, show_psd=True, verbose=False, plot_scale=169) -> mne.io.array.array.RawArray:
+def read_xdf(filename: str, bandpass=(None, 45.0), show_plot=True, show_psd=True, verbose=False, plot_scale=169) -> mne.io.array.array.RawArray:
     """
     Loading XDF file into MNE-RawArray. MNE-Python does not support this file format out of the box, 
     but we can use the pyxdf package and MNELAB to import the data. 
 
     attribute:
+        bandpass  : set Bandpass filter (l_freq, h_freq)
         show_plot : If True, show all EEG channels and able to zoom in-out, scaling
         show_psd  : If True, show overall average power spectral density
 
@@ -39,6 +40,9 @@ def read_xdf(filename: str, show_plot=True, show_psd=True, verbose=False, plot_s
     raw.set_channel_types({'obci_eeg1_5': 'eeg'})   # Pz
     raw.set_channel_types({'obci_eeg1_6': 'eeg'})   # none
     raw.set_channel_types({'obci_eeg1_7': 'eeg'})   # none
+
+    # Add Bandpass filtering (default 0Hz - 45Hz)
+    raw = raw.filter(l_freq=bandpass[0], h_freq=bandpass[1])
 
     show = False
     # Plot EEG graph
@@ -72,7 +76,7 @@ def read_xdf(filename: str, show_plot=True, show_psd=True, verbose=False, plot_s
     return raw
 
 
-def show_epoch(raw: mne.io.array.array.RawArray, filename=None, show_eeg=False, show_time_freq=False, plot_scale=169):
+def show_epoch(raw: mne.io.array.array.RawArray, filename=None, show_eeg=False, show_time_freq=False, plot_scale=200):
     """
     Showing Power spectral density (PSD) plot, split by Left-Right stimuli event, average by epoch 
 
@@ -196,8 +200,9 @@ if __name__=='__main__':
 
     # Loading XDF file into MNE-RawArray
     raw = read_xdf(filename, 
+        bandpass=(3.0, 15.0), # (default 0Hz - 45Hz)
 
-        show_plot=False, 
+        show_plot=True, 
         # show_plot : If True, show all EEG channels and able to zoom in-out, scaling
 
         show_psd=False,
@@ -208,7 +213,7 @@ if __name__=='__main__':
     show_epoch(raw, filename,
 
         show_eeg=False,
-        # show_eeg : If True, (same as show_plot) show all EEG channels and able to zoom in-out, scaling
+        # show_eeg : If True, show all EEG channels and able to zoom in-out, scaling split by Left-Right stimuli
 
         show_time_freq=True
         # show_time_freq : If True, show Time-Frequency plot split by Left-Right stimuli and each O1, Oz, O2, POz, Pz
