@@ -46,6 +46,7 @@ def main():
             #     epoch = client.get_data_as_epoch(n_samples=sfreq)
             #     epoch.average().plot(axes=ax)
             #     plt.pause(1.)
+            plt.cla()
             epoch = client.get_data_as_epoch(n_samples=sfreq)
             epoch.average().plot(axes=ax)
             plt.draw()
