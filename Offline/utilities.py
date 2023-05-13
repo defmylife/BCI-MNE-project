@@ -76,15 +76,16 @@ def read_xdf(filename: str, bandpass=(None, 45.0), show_plot=True, show_psd=True
     return raw
 
 
-def show_epoch(raw: mne.io.array.array.RawArray, filename=None, show_eeg=False, show_time_freq=False, plot_scale=200):
+def epoching(raw: mne.io.array.array.RawArray, filename=None, show_eeg=False, show_psd=True, show_time_freq=False, plot_scale=200) -> mne.epochs.Epochs:
     """
     Showing Power spectral density (PSD) plot, split by Left-Right stimuli event, average by epoch 
 
     attribute:
         show_eeg        : If True, (same as show_plot) show all EEG channels and able to zoom in-out, scaling
+        show_psd        : If True, show power spectral density split by Left-Right stimuli
         show_time_freq  : If True, show Time-Frequency plot split by Left-Right stimuli and each O1, Oz, O2, POz, Pz
 
-    return: None
+    return: MNE Epochs
     """
     raw_eeg = raw.pick_channels([
                     'obci_eeg1_1',
@@ -104,6 +105,8 @@ def show_epoch(raw: mne.io.array.array.RawArray, filename=None, show_eeg=False, 
     )
 
     # Visualization
+    show = False
+
     if show_eeg:
         raw_eeg.plot(
                 duration=10, 
@@ -120,27 +123,31 @@ def show_epoch(raw: mne.io.array.array.RawArray, filename=None, show_eeg=False, 
             scalings=plot_scale, # You may edit scalings value later
             title='Right stimuli start',
         )
+        show = True
 
-    fig, ax = plt.subplots(2, figsize=(9,9))
+    # Plot Power spectral density
+    if show_psd:
+        fig, ax = plt.subplots(2, figsize=(9,9))
 
-    epochs['2'].compute_psd(
-        fmax=30,                    
-        # method='welch',
-        ).plot(
-            axes=ax[0],
-            average=True, 
-            )
-    ax[0].set_title('Left stimuli' if not filename else 'Left stimuli - '+filename)
+        epochs['2'].compute_psd(
+            fmax=30,                    
+            # method='welch',
+            ).plot(
+                axes=ax[0],
+                average=True, 
+                )
+        ax[0].set_title('Left stimuli' if not filename else 'Left stimuli - '+filename)
 
-    epochs['5'].compute_psd(
-        fmax=30,                    
-        # method='welch',
-        ).plot(
-            axes=ax[1],
-            average=True, 
-            )
-    ax[1].set_title('Right stimuli' if not filename else 'Right stimuli - '+filename)
-    plt.tight_layout()
+        epochs['5'].compute_psd(
+            fmax=30,                    
+            # method='welch',
+            ).plot(
+                axes=ax[1],
+                average=True, 
+                )
+        ax[1].set_title('Right stimuli' if not filename else 'Right stimuli - '+filename)
+        plt.tight_layout()
+        show = True
 
     # Plot Time-frequency
     if show_time_freq:
@@ -188,8 +195,11 @@ def show_epoch(raw: mne.io.array.array.RawArray, filename=None, show_eeg=False, 
             power_R.plot([i], mode='logratio', axes=ax[1,i], show=False, colorbar=False)
             ax[1,i].set_title('Right stimuli - '+channel_name[i])
         plt.tight_layout()
+        show = True
 
-    plt.show()
+    if show: plt.show()
+
+    return epochs
 
 
 if __name__=='__main__':
@@ -202,19 +212,22 @@ if __name__=='__main__':
     raw = read_xdf(filename, 
         bandpass=(3.0, 15.0), # (default 0Hz - 45Hz)
 
-        show_plot=True, 
+        show_plot=False, 
         # show_plot : If True, show all EEG channels and able to zoom in-out, scaling
 
         show_psd=False,
         # show_psd : If True, show overall average power spectral density
     )
 
-    # Showing Power spectral density (PSD) split by Left-Right stimuli event
-    show_epoch(raw, filename,
+    # Epoching, showing Power spectral density (PSD) split by Left-Right stimuli event
+    epochs = epoching(raw, filename,
 
         show_eeg=False,
         # show_eeg : If True, show all EEG channels and able to zoom in-out, scaling split by Left-Right stimuli
 
-        show_time_freq=True
+        show_psd=False,
+        # show_psd : If True, show overall average power spectral density split by Left-Right stimuli
+
+        show_time_freq=False,
         # show_time_freq : If True, show Time-Frequency plot split by Left-Right stimuli and each O1, Oz, O2, POz, Pz
     )
