@@ -1,3 +1,5 @@
+from models import simpleModel
+
 import pyxdf
 from pyxdf import match_streaminfos, resolve_streams
 
@@ -6,6 +8,7 @@ from mnelab.io.xdf import read_raw_xdf
 
 import matplotlib.pyplot as plt
 from pprint import pprint
+from sklearn import metrics
 
 
 def read_xdf(filename: str, bandpass=(None, 45.0), show_plot=True, show_psd=True, verbose=False, plot_scale=169) -> mne.io.array.array.RawArray:
@@ -78,7 +81,7 @@ def read_xdf(filename: str, bandpass=(None, 45.0), show_plot=True, show_psd=True
 
 def epoching(raw: mne.io.array.array.RawArray, filename=None, show_eeg=False, show_psd=True, show_time_freq=False, plot_scale=200) -> mne.epochs.Epochs:
     """
-    Showing Power spectral density (PSD) plot, split by Left-Right stimuli event, average by epoch 
+    Epoching, showing Power spectral density (PSD) plot, split by Left-Right stimuli event, average by epoch 
 
     attribute:
         show_eeg        : If True, (same as show_plot) show all EEG channels and able to zoom in-out, scaling
@@ -202,6 +205,70 @@ def epoching(raw: mne.io.array.array.RawArray, filename=None, show_eeg=False, sh
     return epochs
 
 
+def decoding(epochs: mne.epochs.Epochs, plot=False, verbose=False) -> list:
+    """
+    To Decoding the epochs, convert them into a NumPy array and then feed them into models. 
+    Afterward, evaluate the performance of the models and report the results.
+
+    attribute:
+        plot    : If True, visualize plot all events, compare the two ranges of frequencies, and view the outputs.
+        verbose : If True, print the outputs and classification report in the terminal.
+
+    return: List of output
+    """
+    outputs = list()
+
+    # Pick only event 2: Left stimuli, 5: Right stimuli
+    epochs = epochs['2','5']
+
+    # Get the values as numpy array
+    X:np.ndarray = epochs.get_data() * 1e6
+    F:np.ndarray = epochs.compute_psd(method='welch', fmax=30).get_data()
+    t:np.ndarray = epochs.times
+    y:np.ndarray = epochs.events[:, -1]
+
+    # model = simpleModel
+    
+    test_L, test_R, label, x = [], [], [], list(range(16))
+
+    for evnt in x:
+        
+        test_L.append(F[evnt][2][6])
+        test_R.append(F[evnt][2][10])
+        label.append(y[evnt])
+
+    outputs = simpleModel(test_L, test_R)
+
+    if plot:
+        fig, ax = plt.subplots(2, figsize=(10, 5))
+
+        ax[0].step(x, test_L)
+        ax[0].step(x, test_R)
+        ax[0].legend(['frequency 6Hz', 'frequency 10Hz'])
+
+        ax[1].step(x, label)
+        ax[1].step(x, outputs)
+        ax[1].legend(['Labels', 'Predictions'])
+
+        plt.tight_layout()
+        plt.show()
+
+    if verbose:
+        print('\nLabels      :', label)
+        print('Predictions :', outputs, '\n')
+
+        # Classification performance
+        classification_report = metrics.classification_report(label, outputs)
+        # confusion_matrix = metrics.confusion_matrix(label, outputs)
+        print( classification_report )
+
+        # Sensitivity & Specificity
+        # print('Sensitivity :', metrics.recall_score(label, outputs))
+        # print('Specificity :', metrics.recall_score(label, outputs, pos_label=?))
+
+    return outputs
+
+
 if __name__=='__main__':
 
     filename = 'Pipo_1_5_test1.xdf'
@@ -230,4 +297,13 @@ if __name__=='__main__':
 
         show_time_freq=False,
         # show_time_freq : If True, show Time-Frequency plot split by Left-Right stimuli and each O1, Oz, O2, POz, Pz
+    )
+
+    # Decoding
+    outputs = decoding(epochs,
+        plot=False,
+        # plot    : If True, visualize plot all events, compare the two ranges of frequencies, and view the outputs.
+
+        verbose=True,
+        # verbose : If True, print the outputs and classification report in the terminal.
     )
