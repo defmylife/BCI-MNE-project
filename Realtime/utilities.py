@@ -17,7 +17,7 @@ from pprint import pprint
 from sklearn import metrics
 
 
-def read_xdf(filename: str, bandpass=(None, 45.0), show_plot=True, show_psd=True, verbose=False, plot_scale=169) -> mne.io.array.array.RawArray:
+def read_xdf(filename: str, bandpass=(None, 45.0), show_plot=False, show_psd=False, verbose=False, plot_scale=169) -> mne.io.array.array.RawArray:
     """
     Loading XDF file into MNE-RawArray. MNE-Python does not support this file format out of the box, 
     but we can use the pyxdf package and MNELAB to import the data. 
@@ -277,39 +277,25 @@ def decoding(epochs: mne.epochs.Epochs, plot=False, verbose=False) -> list:
 
 if __name__=='__main__':
 
+    #A Loading and Epoching data from XDF file --------------------------
     filename = 'Pipo_1_5_test1.xdf'
-    # filename = 'Pipo_1_5_test2.xdf'
-    # filename = 'Pipo_1_5_test3.xdf'
+    raw = read_xdf(filename, bandpass=(3.0, 15.0)) # (default 0Hz - 45Hz)
 
-    # Loading XDF file into MNE-RawArray
-    raw = read_xdf(filename, 
-        bandpass=(3.0, 15.0), # (default 0Hz - 45Hz)
+    epochs = epoching(raw, show_psd=False)
+    #A ------------------------------------------------------------------
 
-        show_plot=False, 
-        # show_plot : If True, show all EEG channels and able to zoom in-out, scaling
+    # or
 
-        show_psd=False,
-        # show_psd : If True, show overall average power spectral density
-    )
+    #B Loading and Epoching in Realtime usinf LSL -----------------------
 
-    # Epoching, showing Power spectral density (PSD) split by Left-Right stimuli event
-    epochs = epoching(raw, filename,
+    # FILL YOUR CODE HERE
+    # epochs = 
 
-        show_eeg=False,
-        # show_eeg : If True, show all EEG channels and able to zoom in-out, scaling split by Left-Right stimuli
+    #B ------------------------------------------------------------------
 
-        show_psd=False,
-        # show_psd : If True, show overall average power spectral density split by Left-Right stimuli
-
-        show_time_freq=False,
-        # show_time_freq : If True, show Time-Frequency plot split by Left-Right stimuli and each O1, Oz, O2, POz, Pz
-    )
 
     # Decoding
     outputs = decoding(epochs,
-        plot=False,
-        # plot    : If True, visualize plot all events, compare the two ranges of frequencies, and view the outputs.
-
         verbose=True,
         # verbose : If True, print the outputs and classification report in the terminal.
     )
