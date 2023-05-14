@@ -119,12 +119,11 @@ def epoching(raw: mne.io.array.array.RawArray, tmin=0, tmax=10, baseline=(0,0), 
     show = False
 
     if show_eeg:
-        raw_eeg.plot(
-                duration=10, 
-                start=0, 
-                scalings=plot_scale, # You may edit scalings value later
-            ) #, n_channels=8, bad_color='red'
-            # show = True
+        # raw_eeg.plot(
+        #     duration=10, 
+        #     start=0, 
+        #     scalings=plot_scale, # You may edit scalings value later
+        # ) #, n_channels=8, bad_color='red'
 
         epochs['2'].plot(
             scalings=plot_scale, # You may edit scalings value later
