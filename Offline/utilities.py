@@ -85,11 +85,13 @@ def read_xdf(filename: str, bandpass=(None, 45.0), show_plot=True, show_psd=True
     return raw
 
 
-def epoching(raw: mne.io.array.array.RawArray, filename=None, show_eeg=False, show_psd=True, show_time_freq=False, plot_scale=200) -> mne.epochs.Epochs:
+def epoching(raw: mne.io.array.array.RawArray, tmin=0, tmax=10, baseline=(0,0), filename=None, show_eeg=False, show_psd=True, show_time_freq=False, plot_scale=200) -> mne.epochs.Epochs:
     """
     Epoching, showing Power spectral density (PSD) plot, split by Left-Right stimuli event, average by epoch 
 
     attribute:
+        tmin            : <int or float> Initial timestamp of epoch (if is 0 means trigger timestamp same as event start)
+        tmax            : <int or float> Final timestamp (if is 10 means set epoch duration 10 second)
         show_eeg        : If True, (same as show_plot) show all EEG channels and able to zoom in-out, scaling
         show_psd        : If True, show power spectral density split by Left-Right stimuli
         show_time_freq  : If True, show Time-Frequency plot split by Left-Right stimuli and each O1, Oz, O2, POz, Pz
@@ -107,9 +109,9 @@ def epoching(raw: mne.io.array.array.RawArray, filename=None, show_eeg=False, sh
     events, event_dict = mne.events_from_annotations(raw_eeg)
 
     epochs = mne.Epochs(raw_eeg, events, 
-        tmin=0,     # init timestamp of epoch (0 means trigger timestamp same as event start)
-        tmax=10,    # final timestamp (10 means set epoch duration 10 second)
-        baseline=(0, 0),
+        tmin=tmin,      # init timestamp of epoch (if is 0 means trigger timestamp same as event start)
+        tmax=tmax,      # final timestamp (if is 10 means set epoch duration 10 second)
+        baseline=baseline,
         preload=True,
     )
 
