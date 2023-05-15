@@ -17,7 +17,7 @@ This folder contains the following files :
 Install with pip
 
 ```bash
-pip install mne mnelab pyxdf matplotlib pandas numpy tensorflow sklearn
+pip install mne mnelab pyxdf matplotlib pandas numpy tensorflow sklearn pyriemann
 ```
     
 
