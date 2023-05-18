@@ -16,6 +16,8 @@ import matplotlib.pyplot as plt
 from pprint import pprint
 from sklearn import metrics
 
+from mne.decoding import Scaler
+
 
 def read_xdf(filename: str, bandpass=(None, 45.0), show_plot=True, show_psd=True, verbose=False, plot_scale=169) -> mne.io.array.array.RawArray:
     """
@@ -52,7 +54,7 @@ def read_xdf(filename: str, bandpass=(None, 45.0), show_plot=True, show_psd=True
 
     # Add Bandpass filtering (default 0Hz - 45Hz)
     raw = raw.filter(l_freq=bandpass[0], h_freq=bandpass[1])
-
+    
     show = False
     # Plot EEG graph
     # https://mne.tools/stable/generated/mne.io.Raw.html#mne.io.Raw.plot
