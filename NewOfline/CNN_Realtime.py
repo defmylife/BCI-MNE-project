@@ -4,6 +4,7 @@ from pylsl import StreamInlet, resolve_stream
 from scipy import signal
 import numpy as np
 from models import CNNModel
+
 from gripper import Gripper
 
 def main():
