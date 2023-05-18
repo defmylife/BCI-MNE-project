@@ -92,8 +92,8 @@ class CNNModel(Model):
     
     def model_predict_classes(self, X_test):
         pred = self.model.predict(X_test)
-        pred = np.argmax(pred, axis=1)
-        return pred
+        classout = np.argmax(pred, axis=1)
+        return pred,classout
     
     def load_weights(self, path):
         self.model.load_weights(path)
