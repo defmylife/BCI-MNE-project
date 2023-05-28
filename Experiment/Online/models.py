@@ -62,8 +62,6 @@ class FFT_CNNModel(Model):
         # Parameters
         self.bath_size = 4
         self.train_epochs = 10
-        self.upper_threshold = 0.8
-        self.lower_threshold = 0.2
 
         # Define layers
         self.conv1_layer1 = Conv1D(filters=128, kernel_size=3, activation='relu')
