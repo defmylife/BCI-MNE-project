@@ -173,8 +173,9 @@ def epoching(raw: mne.io.array.array.RawArray, tmin=0, tmax=10, baseline=(0,0), 
             '(O1) obci_eeg1_1',
             '(Oz) obci_eeg1_2',
             '(O2) obci_eeg1_3',
-            '(POz) obci_eeg1_4',
-            '(Pz) obci_eeg1_5',)
+            # '(POz) obci_eeg1_4',
+            # '(Pz) obci_eeg1_5',
+            )
 
         fig, ax = plt.subplots(2, 5, figsize=(17, 7))
         plt.title('Time-frequency')
